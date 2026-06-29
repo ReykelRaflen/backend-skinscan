@@ -11,13 +11,15 @@ use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
-    public function register(Request $request) {
+    public function register(Request $request)
+    {
         $request->validate([
             'nama' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
             'usia' => 'nullable|integer',
             'jenis_kelamin' => 'nullable|string',
+            'email_verified_at' => now()
         ]);
 
         $user = User::create([
@@ -38,7 +40,8 @@ class AuthController extends Controller
         ], 201);
     }
 
-    public function login(Request $request) {
+    public function login(Request $request)
+    {
         $request->validate(['email' => 'required|email', 'password' => 'required']);
         $user = User::where('email', $request->email)->first();
 
@@ -57,16 +60,19 @@ class AuthController extends Controller
         ]);
     }
 
-    public function logout(Request $request) {
+    public function logout(Request $request)
+    {
         $request->user()->currentAccessToken()->delete();
         return response()->json(['success' => true, 'message' => 'Logout berhasil']);
     }
 
-    public function getCurrentUser(Request $request) {
+    public function getCurrentUser(Request $request)
+    {
         return response()->json(['success' => true, 'user' => $request->user()]);
     }
 
-    public function sendVerificationOtp(Request $request) {
+    public function sendVerificationOtp(Request $request)
+    {
         $user = $request->user();
         $otp = rand(100000, 999999);
         Cache::put('email_otp_' . $user->email, $otp, now()->addMinutes(10));
@@ -78,7 +84,8 @@ class AuthController extends Controller
         return response()->json(['success' => true, 'message' => 'Kode OTP berhasil dikirim']);
     }
 
-    public function verifyEmailOtp(Request $request) {
+    public function verifyEmailOtp(Request $request)
+    {
         $request->validate(['otp' => 'required|numeric|digits:6']);
         $user = $request->user();
         $cachedOtp = Cache::get('email_otp_' . $user->email);
@@ -93,7 +100,8 @@ class AuthController extends Controller
         return response()->json(['success' => true, 'message' => 'Email berhasil diverifikasi']);
     }
 
-    public function verifyUser(Request $request) {
+    public function verifyUser(Request $request)
+    {
         $request->validate(['email' => 'required|email', 'nama' => 'required|string']);
         $user = User::where('email', $request->email)->where('nama', $request->nama)->first();
 
@@ -103,7 +111,8 @@ class AuthController extends Controller
         return response()->json(['success' => true, 'message' => 'Identitas valid']);
     }
 
-    public function resetPassword(Request $request) {
+    public function resetPassword(Request $request)
+    {
         $request->validate(['email' => 'required|email', 'nama' => 'required|string', 'new_password' => 'required|min:6']);
         $user = User::where('email', $request->email)->where('nama', $request->nama)->first();
 
@@ -115,7 +124,8 @@ class AuthController extends Controller
         return response()->json(['success' => true, 'message' => 'Password berhasil direset']);
     }
 
-    public function updateProfile(Request $request) {
+    public function updateProfile(Request $request)
+    {
         $user = $request->user();
         $request->validate([
             'nama' => 'required|string|max:255',
