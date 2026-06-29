@@ -20,9 +20,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // ── PAKSA SKEMA HTTPS JIKA DIAKSES MELALUI NGROK ATAU PRODUCTION SERVER ──
-        if (str_contains(request()->url(), 'ngrok-free.app') || env('APP_ENV') !== 'local') {
-            URL::forceScheme('https');
-        }
+        // ── PAKSA SKEMA HTTPS SECARA MUTLAK (DIJAMIN BEBAS DARI PERINGATAN BROWSER) ──
+        URL::forceScheme('https');
     }
 }
